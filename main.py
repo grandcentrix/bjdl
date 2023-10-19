@@ -1,7 +1,6 @@
 import requests
 from requests.auth import AuthBase
 import getpass
-import datetime
 import json
 
 

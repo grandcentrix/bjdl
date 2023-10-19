@@ -3,6 +3,8 @@ from requests.auth import AuthBase
 import getpass
 import json
 
+__author__ = "René Beckmann"
+__copyright__ = "Copyright 2023, grandcentrix GmbH"
 
 BASE_URL = "https://api.bluejeans.com"
 

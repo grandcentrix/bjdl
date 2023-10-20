@@ -19,10 +19,5 @@ Instructions for people who do not use Python or git regularly:
 1. You should now be able to use the script: `python3 main.py`
 
 ## Known limitations
-### Number of recordings
-The script can currently only access 100 recordings; pagination is not implemented. If you believe that you hit this limit,
-search in `main.py` for the line containing `{"pageSize": 100}` and change the value to something
-larger. The BlueJeans API documentation does not state any upper bound for this value and I have no idea if it will work
-with larger values.
 ### Shared content
 If screen sharing was active, you can not see the meeting participants in the downloaded video. This seems to be a limitation imposed by BlueJeans.

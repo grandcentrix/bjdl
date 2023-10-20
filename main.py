@@ -48,10 +48,18 @@ def authenticate(name, pw):
 
 def list_meeting_recordings(session, user_id):
     url = BASE_URL + f"/v1/user/{user_id}/meeting_history/recordings"
-    params = {"pageSize": 100}
-    resp = session.get(url, params=params)
-    resp.raise_for_status()
-    return resp.json()
+    page = 1
+    while True:
+        params = {"pageSize": 10, "pageNumber": page}
+        print(f"Getting recordings page {page}")
+        resp = session.get(url, params=params)
+        resp.raise_for_status()
+        recordings = resp.json()
+        if len(recordings) == 0:
+            return
+        for rec in recordings:
+            yield rec
+        page += 1
 
 
 def get_recording(session, user_id, rec_id):
@@ -63,6 +71,7 @@ def get_recording(session, user_id, rec_id):
 
 def get_recording_download_link(session, user_id, content_id):
     url = BASE_URL + f"/v1/user/{user_id}/cms/{content_id}"
+    print(f"Getting link for content ID {content_id}")
     params = {
         "isDownloadable": True,
         "expiry": 10
@@ -78,7 +87,6 @@ def get_dl_links(session, user_id, recordings):
         rec_id = rec["recordingEntityId"]
         recording = get_recording(session, user_id, rec_id)
         for chapter in recording["recordingChapters"]:
-            print(".", end='', flush=True)
             content_id = chapter["compositeContentId"]
             chapter_name = chapter["chapterName"]
             start = chapter["startTimeOffset"]
@@ -92,7 +100,6 @@ def get_dl_links(session, user_id, recordings):
                         "start": start,
                         "end": end
                     })
-        print()
     return result
 
 
@@ -104,7 +111,6 @@ def main():
     token, user_id = authenticate(name, pw)
     session.auth = BlueJeansAuth(token)
     recordings = list_meeting_recordings(session, user_id)
-    print(f"Found {len(recordings)} recordings")
     links = get_dl_links(session, user_id, recordings)
     print("Writing recordings to recordings.json")
     with open("recordings.json", "w") as f:
